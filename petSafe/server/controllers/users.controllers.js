@@ -1,49 +1,66 @@
-import pool from '../database.js';
+import { pool } from '../db.js';
 
-const getAllUsers = (req, res) => {
+const getAllUsers = async (req, res) => {
 
-  pool.query('SELECT * FROM user', (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Error fetching users' });
-    }
+  try {
+    const [results] = await pool.query('SELECT * FROM User');
     res.json(results);
-  });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error fetching users' });
+  }
+
 };
 
-const getUserById = (req, res) => {
-  pool.query('SELECT * FROM User WHERE idUser = ?', [req.params.id], (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Error fetching user' });
-    }
+const getUserById = async (req, res) => {
+
+  try {
+    const [results] = await pool.query('SELECT * FROM User WHERE idUser = ?', [req.params.id]);
     if (results.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
     res.json(results[0]);
-  });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error fetching user' });
+  }
 };
 
-const createUser = (req, res) => {
-  const { mail, userPassword, name, lastName, birthdate, phoneNumber, URL_PerfilePhoto } = req.body;
-  pool.query('INSERT INTO users (mail, userPassword, name, lastName, birthdate, phoneNumber, URL_PerfilePhoto ) VALUES (?, ?, ?, ?, ?, ?, ?)', [mail, userPassword, name, lastName, birthdate, phoneNumber, URL_PerfilePhoto], (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Error creating user' });
-    }
-    res.json({ message: `User created with ID ${results.insertId}` });
-  });
+const createUser = async (req, res) => {
+
+  const { mail, name, lastName, birthdate, phoneNumber, URL_PerfilePhoto } = req.body;
+    try {
+    const [result] = await pool.query('INSERT INTO User (mail, name, lastName, birthdate, phoneNumber, URL_PerfilePhoto) VALUES (?, ?, ?, ?, ?, ?)', [mail, name, lastName, birthdate, phoneNumber, URL_PerfilePhoto]);
+    res.status(201).json({ id: result.insertId, mail, name, lastName, birthdate, phoneNumber, URL_PerfilePhoto });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error creating user' });
+  }
 };
 
-const updateUser = (req, res) => {
+const updateUser = async (req, res) => {
+
   const { id } = req.params;
-  const { name, email } = req.body;
-  res.json({ message: `Update user with ID ${id} to name ${name} and email ${email}` });
-};
+  const { mail, name, lastName, birthdate, phoneNumber, URL_PerfilePhoto } = req.body;
+  try {
+    await pool.query('UPDATE User SET mail = ?, name = ?, lastName = ?, birthdate = ?, phoneNumber = ?, URL_PerfilePhoto = ? WHERE idUser = ?', [mail, name, lastName, birthdate, phoneNumber, URL_PerfilePhoto, id]);
+    res.json({ message: `User with ID ${id} updated` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error updating user' });
+  }
 
-const deleteUser = (req, res) => {
+};
+const lowLogicUser = async (req, res) => {
   const { id } = req.params;
-  res.json({ message: `Delete user with ID ${id}` });
+  try {
+    await pool.query('UPDATE User SET lowLogic = 1 WHERE idUser = ?', [id]);
+    res.json({ message: `User with ID ${id} logically deleted` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error logically deleting user' });
+  }
 };
 
-export { getAllUsers, getUserById, createUser, updateUser, deleteUser };
+export { getAllUsers, getUserById, createUser, updateUser, lowLogicUser };

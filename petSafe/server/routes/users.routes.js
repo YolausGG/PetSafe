@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllUsers, getUserById, createUser, updateUser, deleteUser } from '../controllers/users.controllers.js';
+import { getAllUsers, getUserById, createUser, updateUser, lowLogicUser } from '../controllers/users.controllers.js';
 
 
 
@@ -9,7 +9,7 @@ router.get('/users', getAllUsers);
 router.get('/users/:id', getUserById);
 router.post('/users', createUser);
 router.put('/users/:id', updateUser);
-router.delete('/users/:id', deleteUser);
+router.delete('/users/:id', lowLogicUser);
 
 
 
