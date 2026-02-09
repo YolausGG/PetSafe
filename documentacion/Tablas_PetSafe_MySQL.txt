@@ -1,17 +1,17 @@
 create database DB_PetSafe;
 use DB_PetSafe;
 
-create table User(
+create table `User`(
 idUser int auto_increment primary key,
 mail varchar(60) unique not null,
 userPassword varchar(100) not null,
-name varchar(50) not null,
+`name` varchar(50) not null,
 lastName varchar(50) not null,
 birthdate Date not null,
 phoneNumber varchar(30) not null,
 URL_PerfilePhoto text,
-classification decimal(2,1) default(0) not null,
-type char(1) default('u') not null,
+classification decimal(2,1), 
+`type` char(1) not null default('u'),
 lowLogic boolean default(false) not null, 
 constraint CK_TipoUser check(type = 'a' or type = 'u'),
 constraint CK_Classification check(classification >= 0 and classification <= 5)
@@ -25,9 +25,9 @@ department varchar(100) not null,
 city varchar(100) not null,
 houseNumber varchar(20),
 apartmentNumber varchar(20),
-reference text,
+`reference` text,
 zipCode varchar(20) not null,
-constraint FK_Address_User foreign key(idUser) references User(idUser) on delete cascade,
+constraint FK_Address_User foreign key(idUser) references `User`(idUser) on delete cascade,
 primary key(idAddress, idUser)
 );
 
@@ -36,19 +36,19 @@ idService int auto_increment primary key,
 idUser int not null,
 startDate Date not null,
 endDate Date not null,
-constraint FK_Service_User foreign key(idUser) references User(idUser),
+constraint FK_Service_User foreign key(idUser) references `User`(idUser),
 constraint CK_FechaInicio check(startDate <= endDate),
 constraint CK_FechaFinal check(startDate <= endDate)
 );
 
 create table Pet (
 idPet int auto_increment primary key,
-name varchar(100) not null,
-type varchar(100) not null,
+`name` varchar(100) not null,
+`type` varchar(100) not null,
 race varchar(100) not null,
 size varchar(20) not null,
 birthdate Date not null,
-description text
+`description` text
 );
 
 create table PetPhoto(
@@ -63,7 +63,7 @@ create table Review (
 idReview int,
 idUser int,
 idService int,
-constraint FK_Review_User foreign key(idUser) references User(idUser) on delete cascade,
+constraint FK_Review_User foreign key(idUser) references `User`(idUser) on delete cascade,
 constraint FK_Review_Service foreign key(idService) references Service(idService) on delete cascade,
 primary key(idReview, idUser)
 );
@@ -77,7 +77,7 @@ primary key(idService, idPet)
 );
 
 DELIMITER $$
-CREATE TRIGGER check_birthDate_User BEFORE INSERT ON User
+CREATE TRIGGER check_birthDate_User BEFORE INSERT ON `User`
 FOR EACH ROW
 BEGIN
     IF NEW.birthdate > NOW() THEN
