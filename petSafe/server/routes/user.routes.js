@@ -1,7 +1,5 @@
 import { Router } from "express";
-import { getAllUsers, getUserById, createUser, updateUser, deleteUser, lowLogicUser, upLogicUser } from '../controllers/users.controllers.js';
-
-
+import { getAllUsers, getUserById, createUser, updateUser, deleteUser, lowLogicUser, upLogicUser } from '../controllers/user.controllers.js';
 
 const router = Router();
 
@@ -12,9 +10,5 @@ router.put('/users/:idUser', updateUser);
 router.put('/users/lowLogic/:idUser', lowLogicUser)
 router.put('/users/upLogic/:idUser', upLogicUser)
 router.delete('/users/:idUser', deleteUser);
-
-
-
-
 
 export default router;
