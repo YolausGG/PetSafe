@@ -33,10 +33,15 @@ primary key(idAddress, idUser)
 
 create table Service(
 idService int auto_increment primary key,
-idUser int not null,
+idUserCarer int,
 startDate Date not null,
 endDate Date not null,
-constraint FK_Service_User foreign key(idUser) references `User`(idUser),
+`description` text,
+idUserCreator int not null,
+published boolean not null,
+cratedAt Date default(now()) not null,
+constraint FK_Service_UserCarer foreign key(idUserCarer) references `User`(idUser),
+constraint FK_Service_UserCreator foreign key(idUserCreator) references `User`(idUser),
 constraint CK_FechaInicio check(startDate <= endDate),
 constraint CK_FechaFinal check(startDate <= endDate)
 );
@@ -84,8 +89,7 @@ BEGIN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'La fecha ingresada no es válida';
     END IF;
-END 
-$$
+END $$
 DELIMITER $$
 CREATE TRIGGER check_birthdate_Pet BEFORE INSERT ON Pet
 FOR EACH ROW
@@ -93,5 +97,14 @@ BEGIN
     IF NEW.birthdate <= NOW() THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'La fecha ingresada no es válida';
+    END IF;
+END $$
+DELIMITER $$
+CREATE TRIGGER check_startDate_Service BEFORE INSERT ON Service
+FOR EACH ROW
+BEGIN
+    IF NEW.startDate > NOW() THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'La fecha debe ser posterior al día de hoy';
     END IF;
 END $$
